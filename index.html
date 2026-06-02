@@ -1,13 +1,199 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>projeto-caminho-do-bem</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Caminho do Bem - Sistema de Atendimento Social</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root { 
+            --caminho-roxo: #4a154b; 
+            --caminho-dourado: #d4a017; 
+            --caminho-fundo: #e5d9c9; 
+        }
+        body { background-color: var(--caminho-fundo); font-family: 'Segoe UI', sans-serif; color: #333; }
+        .sidebar { background-color: var(--caminho-roxo); min-height: 100vh; color: white; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+        .nav-link { color: rgba(255,255,255,0.8); margin: 10px 15px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .nav-link:hover, .nav-link.active { background-color: var(--caminho-dourado); color: var(--caminho-roxo) !important; font-weight: bold; }
+        .card { border: none; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.05); }
+        .card-header { background-color: var(--caminho-roxo) !important; color: var(--caminho-dourado) !important; font-weight: bold; text-transform: uppercase; }
+        .btn-custom { background-color: var(--caminho-roxo); color: var(--caminho-dourado); border: 2px solid var(--caminho-dourado); font-weight: bold; padding: 10px 30px; border-radius: 8px; transition: 0.3s; }
+        .btn-custom:hover { background-color: var(--caminho-dourado); color: var(--caminho-roxo); }
+        .form-label { font-weight: 600; color: var(--caminho-roxo); }
+        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        th { background-color: var(--caminho-roxo) !important; color: white !important; }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <div class="row">
+        <nav class="col-md-2 sidebar p-0">
+            <div class="p-4 text-center border-bottom border-secondary">
+                <h5 class="mb-0">CAMINHO DO BEM</h5>
+                <small style="color: var(--caminho-dourado)">Guajuviras - Canoas/RS</small>
+            </div>
+            <ul class="nav flex-column mt-3">
+                <li class="nav-item"><a class="nav-link active" id="linkCadastro" onclick="trocarTela('cadastro')">👤 Novo Cadastro</a></li>
+                <li class="nav-item"><a class="nav-link" id="linkBusca" onclick="trocarTela('busca')">🔍 Buscar Assistidos</a></li>
+            </ul>
+        </nav>
+
+        <main class="col-md-10 p-5">
+            
+            <div id="secaoCadastro">
+                <h2 class="mb-4" style="color: var(--caminho-roxo); font-weight: 800;">Ficha de Atendimento Social</h2>
+                <div class="card">
+                    <div class="card-header">Inserir Novos Dados (Modo Offline)</div>
+                    <div class="card-body p-4">
+                        <form class="row g-3" id="formCadastro">
+                            <div class="col-md-8">
+                                <label class="form-label">Nome Completo</label>
+                                <input type="text" class="form-control" id="nome" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">CPF</label>
+                                <input type="text" class="form-control" id="cpf" placeholder="000.000.000-00">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Endereço Completo</label>
+                                <input type="text" class="form-control" id="endereco" placeholder="Rua, número e ponto de referência no Guajuviras" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">WhatsApp / Telefone</label>
+                                <input type="text" class="form-control" id="telefone" placeholder="(51) 99999-9999">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Data do Atendimento</label>
+                                <input type="date" class="form-control" id="data">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">Relato da Situação / Itens Entregues</label>
+                                <textarea class="form-control" id="obs" rows="4" placeholder="Descreva aqui as principais necessidades da família..."></textarea>
+                            </div>
+                            <div class="col-12 text-end mt-4">
+                                <button type="button" class="btn btn-custom" onclick="dispararSalvamento()">SALVAR REGISTRO OFFLINE</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="secaoBusca" style="display: none;">
+                <h2 class="mb-4" style="color: var(--caminho-roxo); font-weight: 800;">Consulta de Cadastros</h2>
+                <div class="row mb-4">
+                    <div class="col-md-9">
+                        <input type="text" class="form-control form-control-lg" id="inputBusca" placeholder="Digite o nome, CPF ou endereço para pesquisar...">
+                    </div>
+                    <div class="col-md-3">
+                        <button class="btn btn-custom w-100 h-100" onclick="dispararBusca()">PESQUISAR</button>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Endereço</th>
+                                <th>Telefone</th>
+                                <th>Data</th>
+                                <th>Observações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="corpoTabela">
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Digite um termo e clique em pesquisar.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<script>
+    const { ipcRenderer } = require('electron');
+
+    // Inicializa o campo de data com o dia de hoje de forma automática
+    document.getElementById('data').value = new Date().toISOString().split('T')[0];
+
+    // Alternador de Telas da Interface (SPA)
+    function trocarTela(tela) {
+        if(tela === 'cadastro') {
+            document.getElementById('secaoCadastro').style.display = 'block';
+            document.getElementById('secaoBusca').style.display = 'none';
+            document.getElementById('linkCadastro').classList.add('active');
+            document.getElementById('linkBusca').classList.remove('active');
+        } else {
+            document.getElementById('secaoCadastro').style.display = 'none';
+            document.getElementById('secaoBusca').style.display = 'block';
+            document.getElementById('linkCadastro').classList.remove('active');
+            document.getElementById('linkBusca').classList.add('active');
+            dispararBusca(); // Carrega tudo ao abrir a tela de busca
+        }
+    }
+
+    // Lógica de Envio de Dados via IPC
+    function dispararSalvamento() {
+        const dados = {
+            nome: document.getElementById('nome').value.trim(),
+            cpf: document.getElementById('cpf').value.trim(),
+            endereco: document.getElementById('endereco').value.trim(),
+            telefone: document.getElementById('telefone').value.trim(),
+            data: document.getElementById('data').value,
+            obs: document.getElementById('obs').value.trim()
+        };
+
+        if (!dados.nome || !dados.endereco) {
+            alert('🚨 Erro: Os campos "Nome Completo" e "Endereço" são obrigatórios.');
+            return;
+        }
+
+        ipcRenderer.send('salvar-assistido', dados);
+    }
+
+    // Resposta do Processo Principal após Salvar
+    ipcRenderer.on('salvar-status', (event, response) => {
+        alert(response.message);
+        if(response.success) {
+            document.getElementById('formCadastro').reset();
+            document.getElementById('data').value = new Date().toISOString().split('T')[0];
+        }
+    });
+
+    // Lógica de Solicitacao de Busca via IPC
+    function dispararBusca() {
+        const termo = document.getElementById('inputBusca').value.trim();
+        ipcRenderer.send('buscar-assistido', termo);
+    }
+
+    // Renderização dos Resultados na Tabela
+    ipcRenderer.on('resultados-busca', (event, registros) => {
+        const tbody = document.getElementById('corpoTabela');
+        tbody.innerHTML = '';
+
+        if(registros.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">Nenhum registro encontrado.</td></tr>`;
+            return;
+        }
+
+        registros.forEach(item => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="fw-bold">${item.nome}</td>
+                <td>${item.cpf || '---'}</td>
+                <td>${item.endereco}</td>
+                <td>${item.telefone || '---'}</td>
+                <td>${item.data_atendimento ? item.data_atendimento.split('-').reverse().join('/') : '---'}</td>
+                <td><small>${item.obs || '---'}</small></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+</script>
+
+</body>
 </html>
