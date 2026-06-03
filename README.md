@@ -5,7 +5,7 @@ Um aplicativo Desktop *offline-first* desenvolvido para otimizar e assegurar o r
 ##  O Problema
 A equipe de voluntários precisava de uma ferramenta simples, rápida e que funcionasse **sem dependência de internet**, para cadastrar e consultar o histórico de doações e atendimentos às famílias da comunidade de forma segura e com foco na privacidade dos dados.
 
-##  A Solução
+##  Solução
 Desenvolvi uma aplicação Desktop utilizando tecnologias web modernas. O sistema permite o cadastro completo das famílias, registro do histórico de itens entregues e uma busca rápida por CPF, Nome ou Endereço.
 
 Para garantir a segurança da informação e a operação offline, a arquitetura foi desenhada para salvar os dados localmente na máquina física em uso, eliminando a necessidade de servidores em nuvem nesta primeira versão.
